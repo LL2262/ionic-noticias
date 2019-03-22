@@ -31,6 +31,6 @@ export class NoticiasService {
       this.categoriaActual = categoria;
     }
 
-    return this._http.get<RespuestaTopHeadLines>(this.apiUrl+'&category='+categoria+'&apiKey='+this.apiKey);
+    return this._http.get<RespuestaTopHeadLines>(this.apiUrl+'&category='+categoria+'&apiKey='+this.apiKey+'&page='+this.categoriaPage);
   }
 }

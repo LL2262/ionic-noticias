@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonSegment } from '@ionic/angular';
+import { IonSegment, IonInfiniteScroll } from '@ionic/angular';
 import { NoticiasService } from 'src/app/services/noticias.service';
 import { Article } from 'src/app/interfaces/interfaces';
 
@@ -9,6 +9,9 @@ import { Article } from 'src/app/interfaces/interfaces';
   styleUrls: ['tab2.page.scss']
 })
 export class Tab2Page {
+
+  @ViewChild(IonSegment) segment: IonSegment;
+  @ViewChild(IonInfiniteScroll) infinite: IonInfiniteScroll;
 
   categorias = [{name: 'Negocios', value: 'business'}, 
                 {name: 'Entretenimiento', value: 'entertainment'},
@@ -23,17 +26,33 @@ export class Tab2Page {
   constructor(private _noticiasService: NoticiasService){}
 
   ngOnInit(){
+    this.segment.value = this.categorias[0].value;
     this.cargarNoticias(this.categorias[0].value);
   }
 
   categoryChange(event){
+    this.infinite.disabled = false;
     this.noticias = [];
     this.cargarNoticias(event.detail.value);
   }
 
-  cargarNoticias(categoria: string){
+  loadNoticias(event){
+    this.cargarNoticias(this.segment.value, event);
+  }
+
+  cargarNoticias(categoria: string, event?){
     this._noticiasService.getTopHeadLinesCategory(categoria).subscribe(res => {
       this.noticias.push( ...res.articles);
+
+      if(this.noticias.length == res.totalResults){
+        event.target.disabled = true;
+        event.target.complete();
+        return;
+      }
+
+      if(event){
+        event.target.complete();
+      }
     });
   }
 

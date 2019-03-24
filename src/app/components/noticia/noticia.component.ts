@@ -3,6 +3,7 @@ import { Article } from 'src/app/interfaces/interfaces';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { ActionSheetController } from '@ionic/angular';
 import { SocialSharing } from '@ionic-native/social-sharing/ngx';
+import { DataLocalService } from 'src/app/services/data-local.service';
 
 @Component({
   selector: 'app-noticia',
@@ -14,13 +15,39 @@ export class NoticiaComponent implements OnInit {
   @Input() noticia: Article;
   @Input() indice: number;
 
-  constructor(private iab: InAppBrowser, private actionSheetCtrl: ActionSheetController, private socialSharing: SocialSharing) { }
+  constructor(private iab: InAppBrowser, 
+              private actionSheetCtrl: ActionSheetController,
+              private socialSharing: SocialSharing, 
+              private _dataLocalService: DataLocalService) { }
 
   ngOnInit() {
 
   }
 
   async lanzarMenu(){
+
+    let NoticiaFavorito;
+
+    if(this.noticia.favorito == true){
+      NoticiaFavorito = {
+        text: 'Borrar de favoritos',
+        icon: 'trash',
+        cssClass: 'action-dark',
+        handler: () => {
+          this._dataLocalService.borrarNoticia(this.noticia);
+        }
+      }
+    }else{
+      NoticiaFavorito = {
+        text: 'Añadir a favoritos',
+        icon: 'star',
+        cssClass: 'action-dark',
+        handler: () => {
+          this._dataLocalService.guardarNoticia(this.noticia);
+        }
+      }
+    }
+
     const actionSheet = await this.actionSheetCtrl.create({
       buttons: [{
         text: 'Compartir',
@@ -35,14 +62,8 @@ export class NoticiaComponent implements OnInit {
             this.noticia.url
           );
         }
-      }, {
-        text: 'Añadir a favoritos',
-        icon: 'star',
-        cssClass: 'action-dark',
-        handler: () => {
-          console.log('Favorite clicked');
-        }
-      }, {
+      },NoticiaFavorito, 
+      {
         text: 'Cancelar',
         icon: 'close',
         role: 'cancel',
@@ -57,7 +78,6 @@ export class NoticiaComponent implements OnInit {
 
   openNoticia(){
     const browser = this.iab.create(this.noticia.url, '_system');
-
   }
 
 }

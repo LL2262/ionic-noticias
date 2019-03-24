@@ -13,7 +13,7 @@
 // Estilos propios
 
 .text-primary{
-    color: var( --ion-color-primary) !important
+    color: var( --ion-color-primary) !important;
 }
 
 .noticia-source-name{
@@ -28,4 +28,8 @@
 
 .action-dark ion-icon{
     color: white !important;
+}
+
+.tab-selected{
+    color: var( --ion-color-primary) !important;
 }
